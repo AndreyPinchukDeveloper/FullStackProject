@@ -7,15 +7,19 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using BugPorter.API.Features.ReportBug.GitHub;
+using BugPorter.API.Features.ReportBug;
 
 namespace BugPorter.API
 {
     public class ReportBugFunction
     {
+        private readonly CreateGitHubIssueQuery _createGitHubIssueQuery;
         private readonly ILogger<ReportBugFunction> _logger;
 
-        public ReportBugFunction(ILogger<ReportBugFunction> logger)
+        public ReportBugFunction(CreateGitHubIssueQuery createGitHubIssueQuery, ILogger<ReportBugFunction> logger)
         {
+            _createGitHubIssueQuery = createGitHubIssueQuery;
             _logger = logger;
         }
 
@@ -23,7 +27,7 @@ namespace BugPorter.API
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "bugs")] HttpRequest req)
         {
-            
+            NewBug newBug = new NewBug();
             return new OkResult();
         }
     }
