@@ -19,7 +19,7 @@ namespace BugPorter.API.Features.ReportBug.GitHub
         public async Task<ReportedBug> Execute(NewBug newBug)
         {
             _logger.LogInformation("Creating GitHub issue");
-            ReportedBug reportedBug = new ReportedBug("1", "Baaaaad bug", "Some text");
+            ReportedBug reportedBug = new ReportedBug("1", newBug.Summary, newBug.Description);
             _logger.LogInformation("Succesfully created GitHub issue {id}", reportedBug.Id);
             return reportedBug;
         }

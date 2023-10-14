@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 using BugPorter.API.Features.ReportBug.GitHub;
 using BugPorter.API.Features.ReportBug;
 
-namespace BugPorter.API
+namespace BugPorter.API.Fucntions
 {
     public class ReportBugFunction
     {
@@ -25,10 +25,16 @@ namespace BugPorter.API
 
         [FunctionName("ReportBugFunction")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "bugs")] HttpRequest req)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "bugs")] ReportBugRequest request)
         {
-            NewBug newBug = new NewBug();
-            return new OkResult();
+            NewBug newBug = new NewBug(request.Summary, request.Description);
+            ReportedBug reportedBug = await _createGitHubIssueQuery.Execute(newBug);
+            return new OkObjectResult(new ReportBugResponse()
+            {
+                Id = reportedBug.Id,
+                Summary = reportedBug.Summary,
+                Description = reportedBug.Description,
+            });
         }
     }
 }
