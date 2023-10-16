@@ -14,12 +14,12 @@ namespace BugPorter.API.Fucntions
 {
     public class ReportBugFunction
     {
-        private readonly CreateGitHubIssueQuery _createGitHubIssueQuery;
+        private readonly CreateGitHubIssueCommand _createGitHubIssueCommand;
         private readonly ILogger<ReportBugFunction> _logger;
 
-        public ReportBugFunction(CreateGitHubIssueQuery createGitHubIssueQuery, ILogger<ReportBugFunction> logger)
+        public ReportBugFunction(CreateGitHubIssueCommand createGitHubIssueCommand, ILogger<ReportBugFunction> logger)
         {
-            _createGitHubIssueQuery = createGitHubIssueQuery;
+            _createGitHubIssueCommand = createGitHubIssueCommand;
             _logger = logger;
         }
 
@@ -28,7 +28,7 @@ namespace BugPorter.API.Fucntions
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "bugs")] ReportBugRequest request)
         {
             NewBug newBug = new NewBug(request.Summary, request.Description);
-            ReportedBug reportedBug = await _createGitHubIssueQuery.Execute(newBug);
+            ReportedBug reportedBug = await _createGitHubIssueCommand.Execute(newBug);
             return new OkObjectResult(new ReportBugResponse()
             {
                 Id = reportedBug.Id,

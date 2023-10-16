@@ -8,15 +8,17 @@ using System.Threading.Tasks;
 
 namespace BugPorter.API.Features.ReportBug.GitHub
 {
-    public class CreateGitHubIssueQuery
+    public class CreateGitHubIssueCommand
     {
         private readonly GitHubClient _gitHubClient;
-        private readonly ILogger<CreateGitHubIssueQuery> _logger;
+        private readonly ILogger<CreateGitHubIssueCommand> _logger;
+        private readonly GitHubRepositoryOptions _gitHubRepositoryOptions;
 
-        public CreateGitHubIssueQuery(ILogger<CreateGitHubIssueQuery> logger, GitHubClient gitHubClient)
+        public CreateGitHubIssueCommand(GitHubClient gitHubClient, ILogger<CreateGitHubIssueCommand> logger, GitHubRepositoryOptions gitHubRepositoryOptions)
         {
-            _logger = logger;
             _gitHubClient = gitHubClient;
+            _logger = logger;
+            _gitHubRepositoryOptions = gitHubRepositoryOptions;
         }
 
         public async Task<ReportedBug> Execute(NewBug newBug)
@@ -27,7 +29,7 @@ namespace BugPorter.API.Features.ReportBug.GitHub
             {
                 Body = newBug.Description
             };
-            Issue createdIssue = await _gitHubClient.Issue.Create("Andre", "bugPorter", newIssue);
+            Issue createdIssue = await _gitHubClient.Issue.Create(_gitHubRepositoryOptions.Owner, _gitHubRepositoryOptions.Name, newIssue);
 
             _logger.LogInformation("Succesfully created GitHub issue {number}", createdIssue.Number);
             return new ReportedBug(

@@ -17,12 +17,21 @@ namespace BugPorter.API
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            string gitHubToken = builder.GetContext().Configuration.GetValue<string>("GITHUB_TOKEN");
+            IConfiguration configuration = builder.GetContext().Configuration;
+
+            builder.Services.Configure<GitHubRepositoryOptions>(o =>
+            {
+                o.Owner = configuration.GetValue<string>("GITHUB_REPOSITORY_OWNER");
+                o.Name = configuration.GetValue<string>("GITHUB_REPOSITORY_NAME");
+            });
+
+            string gitHubToken = configuration.GetValue<string>("GITHUB_TOKEN");
+            
             builder.Services.AddSingleton(new GitHubClient(new ProductHeaderValue("BugPorter-api"))
             {
                 Credentials = new Credentials(gitHubToken)
             });
-            builder.Services.AddSingleton<CreateGitHubIssueQuery>();
+            builder.Services.AddSingleton<CreateGitHubIssueCommand>();
         }
     }
 }
