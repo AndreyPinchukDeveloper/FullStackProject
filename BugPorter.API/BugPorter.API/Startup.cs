@@ -1,4 +1,6 @@
 ﻿using BugPorter.API.Features.ReportBug.GitHub;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +20,13 @@ namespace BugPorter.API
         public override void Configure(IFunctionsHostBuilder builder)
         {
             IConfiguration configuration = builder.GetContext().Configuration;
+
+            string firebaseConfig = configuration.GetValue<string>("FIREBASE_CONFIG");
+            FirebaseApp firebaseApp = FirebaseApp.Create(new AppOptions()
+            {
+                Credential = GoogleCredential.FromJson(firebaseConfig)
+            });
+            builder.Services.AddSingleton(firebaseApp);
 
             builder.Services.Configure<GitHubRepositoryOptions>(o =>
             {
