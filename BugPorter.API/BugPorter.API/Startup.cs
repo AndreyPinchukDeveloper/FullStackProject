@@ -1,16 +1,11 @@
 ﻿using BugPorter.API.Features.ReportBug.GitHub;
 using FirebaseAdmin;
+using FirebaseAdminAuthentication.DependencyInjection.Extensions;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Octokit;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 [assembly: FunctionsStartup(typeof(BugPorter.API.Startup))]
 namespace BugPorter.API
@@ -27,6 +22,7 @@ namespace BugPorter.API
                 Credential = GoogleCredential.FromJson(firebaseConfig)
             });
             builder.Services.AddSingleton(firebaseApp);
+            builder.Services.AddFirebaseAuthentication();
 
             builder.Services.Configure<GitHubRepositoryOptions>(o =>
             {
